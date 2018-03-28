@@ -4,23 +4,27 @@ from keras.models import Sequential
 from keras.layers import *
 from keras import backend as K
 
+# best loss / accuracy
+best_loss = 1
+best_loss_setup = ""
+best_accuracy = 0
+best_accuracy_setup = ""
 
 # network and training
-
 FEATURES = 4
 BATCH_SIZE = 1
 VALIDATION_SPLIT = 0.2
 VERBOSE = 0
 
-LAYER = 2
+LAYER = 1
 N_HIDDEN = 5
-DROPOUT = 0.0
-EPOCHS = 10
+DROPOUT = 0.3
+EPOCHS = 20
 
-MAX_LAYER = 10
+MAX_LAYER = 3
 MAX_N_HIDDEN = 30
 MAX_DROPOUT = 0.3
-MAX_EPOCHS = 50
+MAX_EPOCHS = 30
 
 while EPOCHS <= MAX_EPOCHS:
     LAYER = 2
@@ -83,13 +87,22 @@ while EPOCHS <= MAX_EPOCHS:
 
                 )
 
+                setup = "Epochs: " + str(EPOCHS) + "  Layer: " + str(LAYER) + "   Nodes: " + str(
+                    N_HIDDEN) + "    Dropout: " + str(
+                    DROPOUT)
                 score = model.evaluate(X_test, Y_test, verbose=0)
                 print("---------------------------------")
-                print("Epochs: " + str(EPOCHS) + "  Layer: " + str(LAYER) + "   Nodes: " + str(
-                    N_HIDDEN) + "    Dropout: " + str(
-                    DROPOUT))
+                print(setup)
                 print("Test score/loss: ", score[0])
                 print("Test accuracy: ", score[1])
+
+                if score[0] < best_loss:
+                    best_loss = score[0]
+                    best_loss_setup = setup
+
+                if score[1] > best_accuracy:
+                    best_accuracy = score[1]
+                    best_accuracy_setup = setup
 
                 DROPOUT += 0.1
 
@@ -98,3 +111,7 @@ while EPOCHS <= MAX_EPOCHS:
         LAYER += 1
 
     EPOCHS += 10
+
+print("_____________________________")
+print("best loss    : " + str(best_loss) + " on setup " + best_loss_setup)
+print("best accuracy: " + str(best_accuracy) + " on setup " + best_accuracy_setup)
